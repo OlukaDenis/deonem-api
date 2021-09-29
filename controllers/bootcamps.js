@@ -1,4 +1,5 @@
 const Bootcamp = require('../models/Bootcamp');
+const ErrorResponse = require('../utils/errorResponse');
 
 /**
  *  @description Get all bootcamps
@@ -10,7 +11,7 @@ exports.getBootcamps = async (req, res, next) => {
     const bootcamps = await Bootcamp.find();
     res.status(200).json({ success: true, data: bootcamps });
   } catch (error) {
-    res.status(400).json({ success: false });
+    next(error);
   }
 };
 
@@ -23,11 +24,11 @@ exports.getBootcamp = async (req, res, next) => {
   try {
     const bootcamp = await Bootcamp.findById(req.params.id);
 
-    if (!bootcamp) return res.status(400).json({ success: false });
+    if (!bootcamp) return next(new ErrorResponse(`Bootcamp of id ${req.params.id} not found.`, 404));
 
     res.status(200).json({ success: true, data: bootcamp });
   } catch (error) {
-    res.status(400).json({ success: false });
+    next(error);
   }
 };
 
@@ -42,7 +43,7 @@ exports.createBootcamp = async (req, res, next) => {
 
     res.status(201).json({ success: true, data: bootcamp });
   } catch (error) {
-    res.status(400).json({ success: false });
+    next(error);
   }
 };
 
@@ -58,11 +59,11 @@ exports.updateBootcamp = async (req, res, next) => {
       runValidators: true,
     });
 
-    if (!bootcamp) return res.status(400).json({ success: false });
+    if (!bootcamp) return next(new ErrorResponse(`Bootcamp of id ${req.params.id} not found.`, 404));
 
     res.status(200).json({ success: true, data: bootcamp });
   } catch (error) {
-    res.status(400).json({ success: false });
+    next(error);
   }
 };
 
@@ -75,10 +76,10 @@ exports.deleteBootcamp = async (req, res, next) => {
   try {
     const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
 
-    if (!bootcamp) return res.status(400).json({ success: false });
+    if (!bootcamp) return next(new ErrorResponse(`Bootcamp of id ${req.params.id} not found.`, 404));
 
     res.status(200).json({ success: true, data: bootcamp });
   } catch (error) {
-    res.status(400).json({ success: false });
+    next(error);
   }
 };
