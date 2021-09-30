@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
 const connectDB = require('./config/db');
-const errorHandler = require('./middleware/errorHandler');
+const errorHandler = require('./middleware/errorHandler.middleware');
 
 // Load env config
 dotenv.config({ path: './config/config.env' });
