@@ -4,12 +4,14 @@ const morgan = require('morgan');
 const colors = require('colors');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler.middleware');
+const { apiVersion } = require('./utils/index');
 
 // Load env config
 dotenv.config({ path: './config/config.env' });
 connectDB();
 
 const bootcamps = require('./routes/bootcamps');
+const courses = require('./routes/courses');
 
 const app = express();
 app.use(express.json());
@@ -20,9 +22,8 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Routes
-app.use(
-  '/api/v1/bootcamps', bootcamps,
-);
+app.use(`${apiVersion}/bootcamps`, bootcamps);
+app.use(`${apiVersion}/courses`, courses);
 
 app.use(errorHandler);
 // Listen server
