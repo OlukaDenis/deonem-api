@@ -9,6 +9,7 @@ const geocoder = require('../utils/gecoder');
  *  @access Public
  */
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
+  let query;
   // Copy request query
   const reqQuery = { ...req.query };
 
@@ -22,7 +23,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
 
   // Finding data
-  let query = Bootcamp.find(JSON.parse(queryStr));
+  query = Bootcamp.find(JSON.parse(queryStr)).populate('courses');
 
   // Select fields
   if (req.query.select) {
@@ -119,11 +120,10 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
  *  @access Private - Token needed
  */
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id);
-
+  const bootcamp = await Bootcamp.findById(req.params.id);
   if (!bootcamp) return next(new ErrorResponse(`Bootcamp of id ${req.params.id} not found.`, 404));
-
-  res.status(200).json({ success: true, data: bootcamp });
+  bootcamp.remove();
+  res.status(200).json({ success: true, data: {} });
 });
 
 /**
