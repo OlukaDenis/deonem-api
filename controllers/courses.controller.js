@@ -41,7 +41,7 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
     select: 'name description website',
   });
 
-  if (!course) return next(new ErrorResponse(`Course with id ${req.params.id} not found`));
+  if (!course) return next(new ErrorResponse(`Course with id ${req.params.id} not found`, 404));
 
   res.status(200).json({
     success: true,
@@ -53,16 +53,54 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
  *  @description Create a new course
  *  @route POST /api/v1/bootcamps/:bootcampId/courses
  *  @access Private
- */exports.createCourse = asyncHandler(async (req, res, next) => {
+ */
+exports.createCourse = asyncHandler(async (req, res, next) => {
   req.body.bootcamp = req.params.bootcampId;
   const bootcamp = Bootcamp.findById(req.body.bootcampId);
 
-  if (!bootcamp) return next(new ErrorResponse(`Bootcamp with id ${req.params.bootcampId} not found`));
+  if (!bootcamp) return next(new ErrorResponse(`Bootcamp with id ${req.params.bootcampId} not found`, 404));
 
   const course = await Course.create(req.body);
 
   res.status(201).json({
     success: true,
     data: course,
+  });
+});
+
+/**
+ *  @description Update a single course
+ *  @route PUT /api/v1/courses/:id
+ *  @access Private
+ */
+exports.updateCourse = asyncHandler(async (req, res, next) => {
+  const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!course) return next(new ErrorResponse(`Course with id ${req.params.id} not found`, 404));
+
+  res.status(200).json({
+    success: true,
+    data: course,
+  });
+});
+
+/**
+ *  @description Delete a single course
+ *  @route DELETE /api/v1/courses/:id
+ *  @access Private
+ */
+exports.deleteCourse = asyncHandler(async (req, res, next) => {
+  const course = await Course.findById(req.params.id);
+
+  if (!course) return next(new ErrorResponse(`Course with id ${req.params.id} not found`, 404));
+
+  await course.remove();
+
+  res.status(200).json({
+    success: true,
+    data: {},
   });
 });
